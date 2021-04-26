@@ -1,32 +1,38 @@
-import * as React from 'react';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import TablePagination from '@material-ui/core/TablePagination';
+import Container from '@material-ui/core/Container';
+import { actions, selectAppState } from '../store/appReducer';
 
-export default function TablePaginationDemo() {
-  const [page, setPage] = React.useState(2);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+const PageSwitcher: React.FC = () => {
+  const dispatch = useDispatch();
+  const { page, rowsPerPage, photos } = useSelector(selectAppState);
 
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number,
-  ) => {
-    setPage(newPage);
+  const handleChangePage = (e: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    dispatch(actions.setPage(newPage));
   };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    const newRowsValue = parseInt(e.target.value, 10);
+    dispatch(actions.setRowsPerPage(newRowsValue));
+    dispatch(actions.setPage(0));
   };
 
   return (
-    <TablePagination
-      component="div"
-      count={100}
-      page={page}
-      onChangePage={handleChangePage}
-      rowsPerPage={rowsPerPage}
-      onChangeRowsPerPage={handleChangeRowsPerPage}
-    />
+    <Container maxWidth="sm">
+      <TablePagination
+        component="div"
+        count={photos.length}
+        page={page}
+        onChangePage={handleChangePage}
+        rowsPerPageOptions={[10, 25]}
+        rowsPerPage={rowsPerPage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </Container>
   );
-}
+};
+
+export default PageSwitcher;
